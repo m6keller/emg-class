@@ -175,8 +175,8 @@ if __name__ == '__main__':
         "SVM":
             {"predictor": "SVM",
              "args": {"C": 100.0, "kernel": "rbf", "degree": 3, "gamma": "auto", "random_state": RANDOM_STATE}},
-        "LR":
-            {"predictor": "LR",
+        "LOR":
+            {"predictor": "LOR",
              "args": {"penalty": "l2", "C": 1.0, "class_weight": "balanced", "solver": "lbfgs", "random_state": RANDOM_STATE}},
         "RF":
             {"predictor": "RF",
