@@ -1,5 +1,7 @@
 """
 Generate splits to automatically save to CSV within subject folder. Generates K-fold validation splits for each subject. 
+This should NOT be used with get_splits.py as get splits.py uses the first k-fold split for training and testing (instead of val).
+This script needs to be changed to work with get_splits, but for now this script will not be used.
 """
 
 import os
