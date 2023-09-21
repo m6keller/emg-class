@@ -1,5 +1,6 @@
 """
 Generate splits to automatically save to CSV within subject folder. 
+Saves a single train.csv and test.csv for a given subject for each day of data collected.
 """
 
 import os
@@ -77,9 +78,7 @@ def main():
         cur_split_folder = os.path.join(splits_folder, id_.replace('/', '_'))
         if not os.path.exists(cur_split_folder):
             os.mkdir(cur_split_folder)
-            
-        # for split in k-fold validation of each day of each subject
-        # for i_s, s in enumerate(id_splits):
+
         data = biolab_utilities.prepare_data(dfs, id_splits, FEATURE_SET, list(GESTURES.keys()))
         train_df = pd.DataFrame(data["train"])
         test_df = pd.DataFrame(data["test"])
