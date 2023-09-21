@@ -32,7 +32,7 @@ def parse_arguments():
         print('Using Hard Coded paths')
         data_folder = os.path.abspath("./features/subj_4/data")
         result_folder = os.path.abspath("./features/subj_4/")
-        splits_folder = os.path.abspath("./features/subj_4/splits")
+        splits_folder = os.path.abspath("./features/subj_4/k_fold_splits")
         calculated_features_folder = os.path.join(result_folder, 'calculated_features')
     else: 
         base_folder_for_subject = os.path.abspath(sys.argv[1])
@@ -40,9 +40,9 @@ def parse_arguments():
         splits_folder = os.path.join(base_folder_for_subject, "splits")
         data_folder = os.path.join(base_folder_for_subject, "data")
         
-    if not os.path.isdir(data_folder):
-        print('{:s} is not a valid folder'.format(data_folder))
-        exit(1)
+    for folder in [calculated_features_folder, splits_folder, data_folder]:
+        if not os.path.isdir(folder):
+            os.mkdir(folder) 
     
     return calculated_features_folder, splits_folder, data_folder
 
