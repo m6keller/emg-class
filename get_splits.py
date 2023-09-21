@@ -1,5 +1,5 @@
 """
-Generate splits to automatically save to CSV within subject folder. Generates K-fold validation splits for each subject. 
+Generate splits to automatically save to CSV within subject folder.
 """
 
 import os
@@ -32,7 +32,7 @@ def parse_arguments():
         print('Using Hard Coded paths')
         data_folder = os.path.abspath("./features/subj_4/data")
         result_folder = os.path.abspath("./features/subj_4/")
-        splits_folder = os.path.abspath("./features/subj_4/k_fold_splits")
+        splits_folder = os.path.abspath("./features/subj_4/train_test_splits")
         calculated_features_folder = os.path.join(result_folder, 'calculated_features')
     else: 
         base_folder_for_subject = os.path.abspath(sys.argv[1])
@@ -73,17 +73,13 @@ def main():
     for id_, id_splits in splits_all.items():
         print('\tTrial ID: {:s}'.format(id_), flush=True)
 
-        cur_split_folder = os.path.join(splits_folder, id_.replace('/', '_'))
-        if not os.path.exists(cur_split_folder):
-            os.mkdir(cur_split_folder)
-            
         # for split in k-fold validation of each day of each subject
         for i_s, s in enumerate(id_splits):
             data = biolab_utilities.prepare_data(dfs, s, FEATURE_SET, list(GESTURES.keys()))
             train_df = pd.DataFrame(data["train"])
             test_df = pd.DataFrame(data["test"])
             
-            dir_for_cur_split = os.path.join(cur_split_folder, f"k_{str(i_s)}")
+            dir_for_cur_split = os.path.join(splits_folder, f"id_{str(i_s)}")
             if os.path.exists(dir_for_cur_split):
                 print("Directory already exists. Skipping...")
             else:
