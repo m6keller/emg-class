@@ -2,92 +2,58 @@
 Generates new features from path to calculated_features for set of filtered EMG features 
 """
 
-
 import os
 import sys
-import glob
-import pickle
-import re
-from typing import List, Dict
 
 import pandas as pd
-from sklearn.metrics import confusion_matrix
+from sklearn.model_selection import train_test_split
 
-import putemg_features
-from putemg_features import biolab_utilities
-
-# from tabgan.sampler import OriginalGenerator, GANGenerator
-import pandas as pd
-import numpy as np
-
+# Need to run this script with python3 - cannot get tabgan working with Python 2
+from tabgan.sampler import GANGenerator
 
 def get_data():
-    """
-    Returns:
-        train: pd.DataFrame
-        target: pd.DataFrame
-        test: pd.DataFrame
-    """
+    if len(sys.argv) < 2:
+        print("Not enough arguments provided")
+        # exit(1)
+        print("Using hardcoded paths")
+        base_path = os.path.abspath("./features/subj_4/train_test_splits/04_2018-03-28")
+    else:
+        base_path = os.path.abspath(sys.argv[1])
     
-    if len(sys.argv) < 3:
-        print('Using Hard Coded paths')
-        putemg_folder = os.path.abspath("./features/subj_4/data")
-        result_folder = os.path.abspath("./features/subj_4")
-        # putemg_folder = os.path.abspath("./benchmark_features")
-
-    else: 
-        putemg_folder = os.path.abspath(sys.argv[1])
-        result_folder = os.path.abspath(sys.argv[2])
-
-        if not os.path.isdir(putemg_folder):
-            print('{:s} is not a valid folder'.format(putemg_folder))
-            exit(1)
-
-        if not os.path.isdir(result_folder):
-            print('{:s} is not a valid folder'.format(result_folder))
-            exit(1)
+    train_path = os.path.join(base_path, "train.csv")
     
+    if not os.path.isfile(train_path):
+        print("Train file does not exist")
+        exit(1)
+        
+    return pd.read_csv(train_path), base_path
     
-    calculated_features_folder = os.path.join(result_folder, 'calculated_features')
-
-    # list all hdf5 files in given input folder
-    all_files = [f for f in sorted(glob.glob(os.path.join(putemg_folder, "*.hdf5")))]
-    all_feature_records = [biolab_utilities.Record(os.path.basename(f)) for f in all_files]
-
-    # data can be additionally filtered based on subject id
-    records_filtered_by_subject = biolab_utilities.record_filter(all_feature_records)
-
-    # load feature data to memory
-    dfs: Dict[biolab_utilities.Record, pd.DataFrame] = {}
-    for r in records_filtered_by_subject:
-        print("Reading features for input file: ", r)
-        filename = os.path.splitext(r.path)[0]
-        dfs[r] = pd.DataFrame(pd.read_hdf(os.path.join(calculated_features_folder,
-                                                       filename + '_filtered_features.hdf5')))
-
-
-    splits_all = biolab_utilities.data_per_id_and_date(records_filtered_by_subject, n_splits=3)
-
-
-    train = pd.DataFrame(np.random.randint(-10, 150, size=(150, 4)), columns=list("ABCD"))
-    target = pd.DataFrame(np.random.randint(0, 2, size=(150, 1)), columns=list("Y"))
-    test = pd.DataFrame(np.random.randint(0, 100, size=(100, 4)), columns=list("ABCD"))
+        
+        
 
 def main():
     # generate data
-    train, target, test = get_data()
-    new_train1, new_target1 = OriginalGenerator().generate_data_pipe(train, target, test, )
-    new_train2, new_target2 = GANGenerator().generate_data_pipe(train, target, test, )
+    data, base_path = get_data()
+    labels = list(filter(lambda col_name: "input" in col_name, data.columns))
+    
+    all_features = data[labels]
+    all_targets = data[["TRAJ_GT"]]
 
-    # example with all params defined
-    new_train3, new_target3 = GANGenerator(gen_x_times=1.1, cat_cols=None,
-            bot_filter_quantile=0.001, top_filter_quantile=0.999, is_post_process=True,
-            adversarial_model_params={
-                "metrics": "AUC", "max_depth": 2, "max_bin": 100, 
-                "learning_rate": 0.02, "random_state": 42, "n_estimators": 500,
-            }, pregeneration_frac=2, only_generated_data=False,
-            gan_params = {"batch_size": 500, "patience": 25, "epochs" : 500,}).generate_data_pipe(train, target,
-                                            test, deep_copy=True, only_adversarial=False, use_adversarial=True)
+    train_x, test_x, train_y, _ = train_test_split(all_features, all_targets, test_size=0.2, random_state=42)
+    
+    new_train, new_target = GANGenerator().generate_data_pipe(train_x, train_y, test_x)
+    
+    synth_data_df = pd.DataFrame(new_train, columns=labels)
+    synth_data_df["TRAJ_GT"] = new_target
 
+    synth_output_dir = os.path.join(base_path, "synth")
+    if not os.path.isdir(synth_output_dir):
+        os.mkdir(synth_output_dir)
+        
+    output_file = os.path.join(synth_output_dir, "synth_train.csv")
+
+    synth_data_df.to_csv(output_file, index=False)
+    
+    
 if __name__ == "__main__":
     main()
