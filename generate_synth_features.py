@@ -16,7 +16,7 @@ from sklearn.metrics import confusion_matrix
 import putemg_features
 from putemg_features import biolab_utilities
 
-from tabgan.sampler import OriginalGenerator, GANGenerator
+# from tabgan.sampler import OriginalGenerator, GANGenerator
 import pandas as pd
 import numpy as np
 
