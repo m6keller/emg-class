@@ -14,6 +14,12 @@ Support vector, logistic, and random forest classifiers were used to classify ha
 
 # Synthetic Features
 
+# Running the Code
+1. Download PUT-EMG data to "Data-HDF5" folder
+2. Get features by running `bash .sh` # TODO
+3. Benchmark for real data with `bash benchmark_all.sh real` # TODO
+4. Benchmark for synth and real data with `bash benchmark_all.sh synth` # TODO
+5. 
 
 # Things to try later
 - Explore using Wavelet transforms to extract features
