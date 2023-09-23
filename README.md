@@ -7,10 +7,10 @@ Using [putEMG](https://biolab.put.poznan.pl/putemg-dataset/) from [Poznan Univer
 # Methods
 Using 6 features extrated from time domain to classify hand gesture class. Comparing this to using GANs to generate sythetic data to see how accuracy, sensitivity, and specificity vary. Both will be benchmarked against KNN, SVM, logistic classifier, and Neural Network. Similar methods proposed by [Electromyogram-Based Classification of Hand and Finger Gestures Using Artificial Neural Networks](https://www.ncbi.nlm.nih.gov/pmc/articles/PMC8749583/pdf/sensors-22-00225.pdf)
 
-# Real Features
+<-- # Real Features
 Support vector, logistic, and random forest classifiers were used to classify hand gestures from features extracted from EMG signals. Accuracy is as follows: 
 
-|    |   SVM |   LOR |   RF |\n|---:|------:|------:|-----:|\n|  0 |     |    |  |
+|    |   SVM |   LOR |   RF |\n|---:|------:|------:|-----:|\n|  0 |     |    |  | !-->
 
 # Synthetic Features
 
